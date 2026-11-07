@@ -1,0 +1,5 @@
+# Local copies of Synology files (not ours to publish)
+*.so
+*.so.*
+*.orig
+*.bak
