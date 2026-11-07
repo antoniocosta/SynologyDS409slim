@@ -11,6 +11,8 @@ never fixed. Every patch comes with:
 
 Nothing here needs Synology's servers, a newer DSM, or new hardware.
 
+<img src="docs/system-health.png" alt="DSM 4.2 System Health: Good. Your DiskStation is working well." width="331">
+
 If you like this or find it useful, support the project by buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/antoniocosta" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 140px !important;" ></a>
@@ -50,7 +52,7 @@ landfill.
    ```
 
 2. **Get ssh and root.** Turn on SSH in Control Panel → Terminal. DSM 4.2 has no `sudo`: log in as `root`,
-   or install `sudo` from Optware, which the commands here use as `/opt/bin/sudo`.
+   or install `sudo` from Optware ([`optware`](patches/optware/)), which the commands here use as `/opt/bin/sudo`.
 
 3. **Pick a patch** below and follow its README. In the commands, `nas` is your NAS's ssh host and `<user>`
    your login on it.
@@ -62,9 +64,11 @@ landfill.
 | [`smtp-tls12`](patches/smtp-tls12/) | Email notifications never arrive; *Send a test email* does nothing; `Failed to SSL_connect()` in the log. The mail server requires TLS 1.2, as more and more do | `/usr/lib/libsynosmtp.so`, 2 × 4 bytes |
 | [`ntp-restrict`](patches/ntp-restrict/) | The clock drifts or stays wrong although NTP is on | nothing: a DSM setting (NTP Service on) |
 | [`shutdown-profile`](patches/shutdown-profile/) | `poweroff` / `reboot` over ssh stop every service but leave the box on | `/etc/profile` |
-| [`disabled-services`](patches/disabled-services/) | Low memory: PostgreSQL and CUPS run even when nothing uses them | 2 start-up scripts, `chmod a-x` |
+| [`disabled-services`](patches/disabled-services/) | Low memory: PostgreSQL and CUPS run even when nothing uses them; the print port (515) stays open | 3 programs, `chmod a-x` |
+| [`terminfo`](patches/terminfo/) | `vi`, `less`, `top` misbehave over ssh from a modern terminal (`unknown terminal type`) | adds `/usr/share/terminfo/x/xterm-256color` |
+| [`optware`](patches/optware/) | How `/opt`, `sudo` and other tools come up at boot, how to restore them after a DSM reset; and Optware's rsync script killing every `rsync` at boot | `/etc/rc.local`, `/etc/rc.optware`, `/etc/profile`; renames `/opt/etc/init.d/S57rsyncd` |
 
-**Status:** all four run on one real DS409slim (DSM 4.2-3259). `smtp-tls12` was checked by disassembling
+**Status:** all of these run on one real DS409slim (DSM 4.2-3259). `smtp-tls12` was checked by disassembling
 the patched library, then tested end to end: DSM's test email went out over TLS 1.2. These
 patches change system files on an unsupported device, so use them at your own risk and keep the backups.
 
@@ -103,6 +107,9 @@ patches/smtp-tls12/              README.md, patch.py (verifies checksums, patche
 patches/ntp-restrict/            README.md, ntp.conf
 patches/shutdown-profile/        README.md, profile-snippet.sh
 patches/disabled-services/       README.md
+patches/terminfo/                README.md
+patches/optware/                 README.md
+docs/system-health.png           screenshot for this README
 ```
 
 ## Legal
